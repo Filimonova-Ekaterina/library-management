@@ -64,3 +64,33 @@ def get_books_by_author(author_id: int, db: Session = Depends(get_db)):
     """Get books by author - GET /api/books/author/{author_id}"""
     book_service = BookService(db)
     return book_service.find_by_author_id(author_id)
+
+@router.get("/search/title/{title}", response_model=List[BookResponse])
+def search_books_by_title(title: str, db: Session = Depends(get_db)):
+    """Search books by title - GET /api/books/search/title/{title}"""
+    book_service = BookService(db)
+    return book_service.find_by_title_containing(title)
+
+@router.get("/isbn/{isbn}", response_model=BookResponse)
+def get_book_by_isbn(isbn: str, db: Session = Depends(get_db)):
+    """Get book by ISBN - GET /api/books/isbn/{isbn}"""
+    book_service = BookService(db)
+    book = book_service.find_by_isbn(isbn)
+    if not book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Book with ISBN {isbn} not found"
+        )
+    return book
+
+@router.get("/available/", response_model=List[BookResponse])
+def get_available_books(db: Session = Depends(get_db)):
+    """Get available books - GET /api/books/available/"""
+    book_service = BookService(db)
+    return book_service.find_available_books()
+
+@router.get("/overdue/", response_model=List[BookResponse])
+def get_overdue_books(db: Session = Depends(get_db)):
+    """Get overdue books - GET /api/books/overdue/"""
+    book_service = BookService(db)
+    return book_service.find_overdue_books()

@@ -27,3 +27,12 @@ class UserService:
     def update(self, user_id: int, user_update: UserUpdate) -> Optional[User]:
         update_data = {k: v for k, v in user_update.dict().items() if v is not None}
         return self.user_repository.update(user_id, update_data)
+    
+    def search_by_name(self, search_term: str) -> List[User]:
+        return self.user_repository.search_by_name(search_term)
+    
+    def exists_by_email(self, email: str) -> bool:
+        return self.user_repository.exists_by_email(email)
+    
+    def find_users_with_active_loans(self) -> List[User]:
+        return self.user_repository.find_users_with_active_loans()
