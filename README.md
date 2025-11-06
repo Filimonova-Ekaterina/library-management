@@ -22,4 +22,6 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-4. Откройте документацию API: http://localhost:8080/docs
+4. Откройте документацию API: 
+Swagger UI: http://localhost:8080/docs - для тестирования
+ReDoc: http://localhost:8080/redoc

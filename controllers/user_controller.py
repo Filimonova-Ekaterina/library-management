@@ -9,13 +9,11 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 
 @router.get("/", response_model=List[UserResponse])
 def get_all_users(db: Session = Depends(get_db)):
-    """Get all users"""
     user_service = UserService(db)
     return user_service.find_all()
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-    """Get user by ID"""
     user_service = UserService(db)
     user = user_service.find_by_id(user_id)
     if not user:
@@ -27,10 +25,8 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(user_create: UserCreate, db: Session = Depends(get_db)):
-    """Create new user"""
     user_service = UserService(db)
     
-    # ѕровер€ем, нет ли уже пользовател€ с таким email
     if user_service.exists_by_email(user_create.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -41,7 +37,6 @@ def create_user(user_create: UserCreate, db: Session = Depends(get_db)):
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
-    """Update user"""
     user_service = UserService(db)
     user = user_service.update(user_id, user_update)
     if not user:
@@ -53,7 +48,6 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    """Delete user"""
     user_service = UserService(db)
     if not user_service.delete_by_id(user_id):
         raise HTTPException(
@@ -63,7 +57,6 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.get("/email/{email}", response_model=UserResponse)
 def get_user_by_email(email: str, db: Session = Depends(get_db)):
-    """Get user by email"""
     user_service = UserService(db)
     user = user_service.find_by_email(email)
     if not user:
@@ -75,6 +68,5 @@ def get_user_by_email(email: str, db: Session = Depends(get_db)):
 
 @router.get("/search/{name}", response_model=List[UserResponse])
 def search_users_by_name(name: str, db: Session = Depends(get_db)):
-    """Search users by name"""
     user_service = UserService(db)
     return user_service.search_by_name(name)

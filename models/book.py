@@ -22,3 +22,7 @@ class Book(Base):
     
     def __repr__(self):
         return f"<Book {self.title}>"
+    
+    @property
+    def category_name(self) -> str:
+        return self.category.name if self.category else None

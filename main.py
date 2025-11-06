@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from config.database import engine, Base, get_db
 from config.data_loader import DataLoader
+from config.exception_handlers import add_exception_handlers
 from controllers import book_controller, author_controller, user_controller
 import models
 
@@ -26,8 +27,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+add_exception_handlers(app)
+
 app.include_router(book_controller.router)
 app.include_router(author_controller.router)
+app.include_router(user_controller.router)
 
 @app.get("/")
 def read_root():
