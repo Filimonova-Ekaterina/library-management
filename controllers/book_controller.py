@@ -6,20 +6,26 @@ from services.book_service import BookService
 from services.author_service import AuthorService
 from services.category_service import CategoryService
 from schemas.book_schema import BookResponse, BookCreate, BookUpdate
+from config.dependencies import get_current_active_user
 
 router = APIRouter(prefix="/api/books", tags=["books"])
 
 @router.get("/", response_model=List[BookResponse])
 def get_all_books(
-    skip: int = Query(0, ge=0, description="Skip posts"),
-    limit: int = Query(100, ge=1, le=1000, description="Posts limit"),
-    db: Session = Depends(get_db)):
+    skip: int = Query(0, ge=0, description="Пропустить записей"),
+    limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)):
     book_service = BookService(db)
     books = book_service.find_all()
     return books[skip:skip + limit]
 
 @router.get("/{book_id}", response_model=BookResponse)
-def get_book_by_id(book_id: int, db: Session = Depends(get_db)):
+def get_book_by_id(
+    book_id: int, 
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
+):
     book_service = BookService(db)
     book = book_service.find_by_id(book_id)
     if not book:
@@ -30,7 +36,11 @@ def get_book_by_id(book_id: int, db: Session = Depends(get_db)):
     return book
 
 @router.post("/", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
-def create_book(book_create: BookCreate, db: Session = Depends(get_db)):
+def create_book(
+    book_create: BookCreate, 
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
+):
     book_service = BookService(db)
     author_service = AuthorService(db)
     category_service = CategoryService(db)
@@ -91,6 +101,15 @@ def update_book(book_id: int, book_update: BookUpdate, db: Session = Depends(get
             detail=f"Book with ID {book_id} not found"
         )
     return updated_book
+
+@router.get("/public/", response_model=List[BookResponse])
+def get_public_books(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    db: Session = Depends(get_db)):
+    book_service = BookService(db)
+    books = book_service.find_all()
+    return books[skip:skip + limit]
 
 
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)

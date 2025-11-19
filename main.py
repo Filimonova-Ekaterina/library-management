@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from config.database import engine, Base, get_db
 from config.data_loader import DataLoader
 from config.exception_handlers import add_exception_handlers
-from controllers import book_controller, author_controller, user_controller
+from controllers import book_controller, author_controller, user_controller, auth_controller
 import models
 
 @asynccontextmanager
@@ -29,6 +29,7 @@ app = FastAPI(
 
 add_exception_handlers(app)
 
+app.include_router(auth_controller.router)
 app.include_router(book_controller.router)
 app.include_router(author_controller.router)
 app.include_router(user_controller.router)
@@ -43,4 +44,4 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

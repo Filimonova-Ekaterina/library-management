@@ -4,13 +4,13 @@ from models.category import Category
 from models.book import Book
 from models.user import User
 from datetime import date, datetime
-
+from passlib.context import CryptContext
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class DataLoader:
     def __init__(self, db: Session):
         self.db = db
     
     def load_test_data(self):
-        """Загрузка тестовых данных в базу"""
         
         if self.db.query(Author).count() > 0:
             print(" Тестовые данные уже загружены")
@@ -74,21 +74,31 @@ class DataLoader:
         self.db.add_all([war_and_peace, eugene_onegin])
         self.db.commit()
         
-        admin = User(
-            email="admin@library.com",
-            password="admin123",
-            first_name="Администратор",
-            last_name="Системы"
-        )
-        
-        librarian = User(
-            email="librarian@library.com",
-            password="librarian123",
-            first_name="Библиотекарь", 
-            last_name="Главный"
-        )
-        
-        self.db.add_all([admin, librarian])
+        users_data = [
+                {
+                    "email": "admin@library.com",
+                    "password": "admin123",
+                    "first_name": "Администратор",
+                    "last_name": "Системы"
+                },
+                {
+                    "email": "user@library.com", 
+                    "password": "user123",
+                    "first_name": "Пользователь",
+                    "last_name": "Тестовый"
+                }
+            ]
+            
+        for user_data in users_data:
+            hashed_password = pwd_context.hash(user_data["password"])
+            user = User(
+                email=user_data["email"],
+                password=hashed_password,  # ← Теперь хешированный пароль
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"]
+            )
+            self.db.add(user)
+            
         self.db.commit()
         
         print(" Тестовые данные успешно загружены!")

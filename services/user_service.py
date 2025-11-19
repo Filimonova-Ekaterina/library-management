@@ -36,3 +36,14 @@ class UserService:
     
     def find_users_with_active_loans(self) -> List[User]:
         return self.user_repository.find_users_with_active_loans()
+    
+    def create_user_with_hashed_password(self, user_create: UserCreate) -> User:
+        from services.auth_service import AuthService
+        auth_service = AuthService(self.db)
+        
+        hashed_password = auth_service.get_password_hash(user_create.password)
+        user_data = user_create.dict()
+        user_data['password'] = hashed_password
+        
+        user = User(**user_data)
+        return self.user_repository.save(user)

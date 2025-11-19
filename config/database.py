@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-DATABASE_URL = "mysql+pymysql://root:password1234@localhost:3306/library_db?charset=utf8mb4"
+DATABASE_URL = "mysql+pymysql://root:Password1234@localhost:3306/library_db?charset=utf8mb4" #Enter your password after root:
 
 engine = create_engine(
     DATABASE_URL,
