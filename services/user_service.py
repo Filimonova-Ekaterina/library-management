@@ -15,7 +15,8 @@ class UserService:
         return self.user_repository.find_by_id(user_id)
     
     def save(self, user_create: UserCreate) -> User:
-        user = User(**user_create.dict())
+        user_data = user_create.model_dump()
+        user = User(**user_data)
         return self.user_repository.save(user)
     
     def delete_by_id(self, user_id: int) -> bool:
@@ -25,7 +26,7 @@ class UserService:
         return self.user_repository.find_by_email(email)
     
     def update(self, user_id: int, user_update: UserUpdate) -> Optional[User]:
-        update_data = {k: v for k, v in user_update.dict().items() if v is not None}
+        update_data = {k: v for k, v in user_update.model_dump().items() if v is not None}
         return self.user_repository.update(user_id, update_data)
     
     def search_by_name(self, search_term: str) -> List[User]:

@@ -15,14 +15,15 @@ class BookService:
         return self.book_repository.find_by_id(book_id)
     
     def save(self, book_create: BookCreate) -> Book:
-        book = Book(**book_create.dict())
+        book_data = book_create.model_dump()
+        book = Book(**book_data)
         return self.book_repository.save(book)
     
     def delete_by_id(self, book_id: int) -> bool:
         return self.book_repository.delete_by_id(book_id)
     
     def update(self, book_id: int, book_update: BookUpdate) -> Optional[Book]:
-        update_data = {k: v for k, v in book_update.dict().items() if v is not None}
+        update_data = {k: v for k, v in book_update.model_dump().items() if v is not None}
         return self.book_repository.update(book_id, update_data)
     
     def find_by_title_containing(self, title: str) -> List[Book]:
